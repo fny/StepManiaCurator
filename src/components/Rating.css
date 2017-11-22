@@ -1,0 +1,25 @@
+.Rating {
+  display: flex;
+  user-select: none;
+  position: relative;
+  z-index: 20;
+}
+
+.Rating-button {
+  flex-grow: 1;
+  flex-basis: 0;
+  outline: 0;
+  height: 10vh;
+}
+
+.Rating-button-selected {
+  background-color: #ffff4d;
+}
+
+.Rating-network-error {
+  border: 2px solid red;
+}
+
+.Rating-persistence-error {
+  border: 2px solid greenyellow;
+}

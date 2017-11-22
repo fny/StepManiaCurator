@@ -1,0 +1,73 @@
+form.nav method="get" style="width: 100%;"
+  input type="text" placeholder="search" name="query" style="width: 60px;"
+
+  select name="per_page"
+    - [10, 50, 100, 200].each do |pages|
+      option selected=("selected" if params['per_page'] == pages.to_s)
+        = pages
+
+  select name="page"
+    - (1..@scope.total_pages).each do |i|
+      option selected=("selected" if params['page'] == i.to_s)
+        =i
+
+
+  input type="checkbox" name="skip_tagged" checked=("checked" if params['skip_tagged'] == 'on')
+  button Go
+
+  .pagination
+    a.pagination-item href="?#{Rack::Utils.build_query(params.merge(page: 1))}"
+      | 1
+    a.pagination-item href="?#{Rack::Utils.build_query(params.merge(page: @scope.total_pages))}"
+      = @scope.total_pages
+    a.pagination-item href="?#{Rack::Utils.build_query(params.merge(page: [1, params.fetch('page', 1).to_i - 1].max))}"
+      | &laquo;
+    a.pagination-item href="#" = params['page']
+    a.pagination-item href="?#{Rack::Utils.build_query(params.merge(page: params.fetch('page', 1).to_i + 1))}"
+      | &raquo;
+
+
+
+.container
+  .songs
+    - @scope.by_page.each do |song|
+      == slim :song, locals: { song: song }
+
+<script src="//cdn.jsdelivr.net/blazy/latest/blazy.min.js"></script>
+
+
+javascript:
+  function onlyPlayOneIn(container) {
+    container.addEventListener("play", function(event) {
+    audio_elements = container.getElementsByTagName("audio")
+      for(i=0; i < audio_elements.length; i++) {
+        audio_element = audio_elements[i];
+        if (audio_element !== event.target) {
+          audio_element.pause();
+        }
+      }
+    }, true);
+  }
+
+  document.addEventListener("DOMContentLoaded", function() {
+    onlyPlayOneIn(document.body);
+  });
+
+
+
+  async function rerender(action, id) {
+    var x = await fetch(action)
+    var y = await x.text()
+    document.getElementById(id).innerHTML = y
+  }
+
+
+  document.addEventListener('click', (e) => {
+    const target = e.target
+    if (target.classList.contains('js-swap')) {
+      rerender(target.dataset.action, target.dataset.target)
+    }
+  }, false);
+
+
+  var bLazy = new Blazy();

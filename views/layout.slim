@@ -1,0 +1,148 @@
+doctype html
+html
+  head
+    title app-name
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  body
+    css:
+      body {
+        font-family: sans-serif;
+        font-size: 12px;
+        margin: 0;
+        padding: 0;
+      }
+
+      audio::-webkit-media-controls-mute-button, video::-webkit-media-controls-mute-button {
+        display: none;
+      }
+      audio::-webkit-media-controls-volume-slider, video::-webkit-media-controls-volume-slider {
+        display: none;
+      }
+
+      .tag {
+        user-select: none;
+        display: inline-block;
+        margin: 2px;
+        border-radius: 5px;
+        font-size: 1rem;
+        background: #555;
+        padding: 0.2rem;
+        color: #fff;
+        text-decoration: none;
+      }
+
+      .tags {
+        padding-top: 0.2rem;
+        padding-bottom: 0.5rem;
+      }
+
+      .tag-remove {
+        background: #4285f4;
+        background: #fff;
+        color: #000;
+      }
+
+      .level-box {
+        text-align: center;
+        display: inline-block;
+        height:1rem;
+        width: 1rem;
+        color: white;
+      }
+      .level-box-beginner {
+        background-color: #2c7bb6;
+      }
+      .level-box-easy {
+        background-color: #abd9e9;
+      }
+
+      .level-box-medium {
+        background-color: #fdae61;
+      }
+      .level-box-hard {
+        background-color: #d7191c;
+      }
+      .song-top {
+        display: flex;
+      }
+      .song-art {
+        margin-right: 0.5rem;
+      }
+      .song-title {
+        font-weight: bold;
+      }
+      .song-art {
+        height: 5rem;
+        width: 5rem;
+        text-align: center;
+        background-color: #111;
+        overflow: hidden;
+        flex-basis: 5rem;
+        flex-shrink: 0;
+      }
+      .song-art img {
+        height: 5rem;
+      }
+      .song-details {
+        user-select: none;
+        padding-top: 0.5rem;
+        line-height: 1.1rem;
+      }
+
+      .song:nth-child(odd) {
+        background: #eee;
+      }
+      .song:nth-child(even) {
+        background: #ccc;
+      }
+
+      .container {
+        margin: 0 auto;
+      }
+
+
+      @media screen and (min-width: 640px) {
+        .songs {
+          display: grid;
+          grid-template-columns: 310px 310px;
+          grid-gap: 10px;
+          margin: 0 auto;
+        }
+        .container {
+          width: 640px;
+        }
+      }
+
+      @media screen and (min-width: 1000px) {
+        .songs {
+          display: grid;
+          grid-template-columns: 320px 320px 320px;
+          grid-gap: 10px;
+        }
+        .container {
+          width: 1000px;
+        }
+      }
+
+      .songs {
+        padding-top:50px;
+      }
+
+      .pagination {
+        display: inline-block;
+      }
+
+      .pagination-item {
+        display: inline-block;
+        padding: 0.5em;
+      }
+
+      .nav {
+        position: fixed;
+        z-index: 100;
+        line-height: 1.5rem;
+        background-color: grey;
+        text-align: center;
+      }
+
+    == yield

@@ -1,0 +1,26 @@
+.Controls {
+  display: flex;
+  height: 10vh;
+  user-select: none;
+  position: relative;
+  z-index: 20;
+}
+
+.Controls-button {
+  font-size: 1.2rem;
+  font-weight: thin;
+  border: none;
+  flex-grow: 1;
+  flex-basis: 0;
+  outline: none;
+  border-radius: 0;
+  background-color: #444;
+  color: white;
+  border: none;
+  cursor: pointer;
+  letter-spacing: 1px;
+}
+
+.Controls-button:hover {
+  background-color: #666;
+}

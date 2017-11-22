@@ -1,0 +1,46 @@
+.Tagging {
+  background:  #ccc;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  user-select: none;
+  position: relative;
+  z-index: 20;
+}
+.Tagging-row {
+  display: flex;
+  height: 10vh;
+  width: 100%;
+}
+.Tagging-tag {
+  cursor: pointer;
+  font-size: 1rem;
+  flex-basis: 1px;
+  flex-grow: 1;
+  border: none;
+  background: #ccc;
+  border-radius: 0;
+  box-sizing: border-box;
+  outline: none;
+}
+
+.Tagging-tag-selected {
+  background: #4343ff;
+  color: #fff;
+}
+
+.Tagging-tag-placeholder {
+  cursor: default;
+}
+
+.Tagging-tag-placeholder:hover {
+  background: #ccc;
+}
+
+.Tagging-tag-request-error {
+  border: 2px solid red;
+}
+
+.Tagging-tag-persistence-error {
+  border: 2px solid greenyellow;
+}

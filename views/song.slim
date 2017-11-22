@@ -1,0 +1,32 @@
+.song id=song.id
+  .song-top
+    .song-art
+      img.b-lazy data-src=file_url(song, 'display_image_path') src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" onerror="this.src='http://via.placeholder.com/200x200/444444?text=Missing'"
+    .song-details title=song.title
+      .song-title
+        = song.display_audio_path
+        - if !song.subtitle.empty?
+          | &nbsp;/&nbsp;
+          = song.subtitle
+      = "#{song.artist} // #{song.collection}"
+      br
+      .levels
+        - %w[Beginner Easy Medium Hard].each do |level|
+            span class="level-box level-box-#{level.downcase}"= song.levels&.fetch(level, 0)
+        span style="background:white;"
+          | &nbsp;
+          = song.bpms
+          | &nbsp;
+
+  .song-bottom
+    .song-audio
+      audio controls="" preload="none" controlsList="nofullscreen nodownload noremoteplayback"
+        source src=file_url(song, 'audio_path')
+    .tags
+      - Library::TAGS.each do |tag|
+        - if song.has_tag(tag)
+          .tag.tag-remove.js-swap data-action=remove_tag_url(song, tag) data-target=song.id
+            =tag
+        - else
+          .tag.tag-add.js-swap data-action=add_tag_url(song, tag) data-target=song.id
+            =tag

@@ -1,0 +1,23 @@
+.wrapper {
+  max-width: 450px;
+  margin: 0 auto; 
+}
+
+.App-offline {
+  color: white;
+  background: #444;
+  line-height: 2rem;
+  text-align: center;
+  position: fixed;
+  width: 100%
+}
+
+
+.App-loading {
+  color: white;
+  background: #444;
+  line-height: 2rem;
+  text-align: center;
+  position: fixed;
+  width: 100%
+}
