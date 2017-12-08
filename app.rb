@@ -12,17 +12,9 @@ require './lib/song'
 require './lib/sm_parser'
 require './lib/step_mania_file'
 
-song_cache_path = 'tmp/songs.cache'
-# This only works because any changes made are read/write from disk
-if File.exists?(song_cache_path) && !ENV.key?('REFRESH_SONGS')
-  songs = Marshal.load(File.read(song_cache_path)).sort_by(&:artist)
-else
-  song_paths = Dir.glob('../Songs/*/*').map { |rel_path| File.expand_path(rel_path) }
-  songs = Parallel.map_with_index(song_paths) { |s| Song.new(s) }.select { |s| s.valid? }.sort_by(&:artist)
-  File.open(song_cache_path, 'w') { |f| f.write(Marshal.dump(songs)) }
-end
+songs_path = '../Songs/'
 
-$library = Library.new(songs)
+$library = Library.cached_load_from(songs_path, refresh: !ENV['REFRESH_SONGS'].nil?)
 
 class App < Sinatra::Base
   logger filename: "logs/#{settings.environment}.log", level: :debug

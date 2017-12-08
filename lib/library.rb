@@ -1,8 +1,26 @@
+require 'cgi'
 
 class Library
-  TAGS = %w[DEL ERR ??? LOL LAT POP RCK TCH OLD R&B FOB]
   extend Memoist
   attr_reader :songs
+
+  def self.load_from(relative_path)
+    glob_path = File.join(relative_path, '*', '*')
+    song_paths = Dir.glob(glob_path).map { |rel_path| File.expand_path(rel_path) }
+    songs = Parallel.map_with_index(song_paths) { |s| Song.new(s) }.select { |s| s.valid? }.sort_by(&:artist)
+    new(songs)
+  end
+  
+  def self.cached_load_from(relative_path, refresh: false)
+    library_cache_path = CGI.escape(File.join('tmp', relative_path))
+    # This only works because any changes made are read/write from disk
+    if File.exists?(library_cache_path) && !refresh
+      Marshal.load(File.read(cache_path))
+    else
+      Library.load_from('../Songs/')
+      File.open(library_cache_path, 'w') { |f| f.write(Marshal.dump(self)) }
+    end
+  end
 
   def initialize(songs)
     @songs = songs
@@ -16,6 +34,24 @@ class Library
 
   memoize def collections
     songs.map(&:collection).uniq.sort
+  end
+
+  def songs_without_tag(tag)
+    @library.songs.select { |song| !song.tags.include?(tag) }
+  end
+
+  def songs_with_tag(tag)
+    @library.songs.select { |song| song.tags.include?(tag) }
+  end
+
+  def songs_with_tags(tags)
+    @library.songs.select { |song| includes_all(song.tags, tags) }
+  end
+
+  private
+
+  def includes_all(a1, a2)
+    a2.all? { |e| a1.include?(e) }
   end
 end
 
@@ -41,6 +77,7 @@ class Scope
   def by_page
     @songs[@page * @per_page + 1, @per_page] || []
   end
+
 
   private
 
