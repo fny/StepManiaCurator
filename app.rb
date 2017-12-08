@@ -1,6 +1,9 @@
-require 'sinatra'
+
 require 'cgi'
 require 'ostruct'
+
+require 'sinatra'
+require 'sinatra/logger'
 require 'memoist'
 require 'parallel'
 
@@ -9,16 +12,20 @@ require './lib/song'
 require './lib/sm_parser'
 require './lib/step_mania_file'
 
-$song_paths = Dir.glob('../Songs/*/*').map { |rel_path| File.expand_path(rel_path) }
-$songs = Parallel.map_with_index($song_paths) { |s| Song.new(s) }.select { |s| s.valid? }.sort_by(&:title)
+song_cache_path = 'tmp/songs.cache'
+# This only works because any changes made are read/write from disk
+if File.exists?(song_cache_path) && !ENV.key?('REFRESH_SONGS')
+  songs = Marshal.load(File.read(song_cache_path)).sort_by(&:artist)
+else
+  song_paths = Dir.glob('../Songs/*/*').map { |rel_path| File.expand_path(rel_path) }
+  songs = Parallel.map_with_index(song_paths) { |s| Song.new(s) }.select { |s| s.valid? }.sort_by(&:artist)
+  File.open(song_cache_path, 'w') { |f| f.write(Marshal.dump(songs)) }
+end
 
-# File.open('songs.dump', 'w') { |f| f.puts(Marshal.dump($songs)) }
-
-# $songs = Marshal.load(File.read('songs.dump'))
-$library = Library.new($songs)
+$library = Library.new(songs)
 
 class App < Sinatra::Base
-  
+  logger filename: "logs/#{settings.environment}.log", level: :debug
   set :public_folder, './build'
   enable :static
 

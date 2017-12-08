@@ -4,7 +4,7 @@ import axios from 'axios'
 
 export const http = axios.create({
   baseURL: settings.host,
-  timeout: 1000,
+  timeout: settings.requestTimeoutSeconds * 1000
 })
 
 export function imageURL(song: Song) {
@@ -35,6 +35,10 @@ export function ratingURL(song: Song, newRating: number) {
   return `${settings.host}/songs/${song.id}/rate/${newRating}`
 }
 
-export function hasNoSupportedAudio(song: Song) {
-  return (song.audio_ext !== '.mp3' && song.audio_ext !== '.ogg')
+export function isVideo(song: Song) {
+  return song.audio_ext === '.avi'
+}
+
+export function randomStr() {
+  return Math.random().toString(36).substring(7)
 }

@@ -27,8 +27,7 @@ class SimpleCache {
   }
 }
 
-const AUDIO_CACHE = new SimpleCache(10);
-(window as any).CACHE = AUDIO_CACHE
+const AUDIO_CACHE = new SimpleCache(10)
 
 export default class AudioPlayer {
   audio: HTMLAudioElement
@@ -39,7 +38,7 @@ export default class AudioPlayer {
       this.audio = cachedAudio
     } else {
       this.audio = new Audio()
-      this.audio.preload = 'preload'
+      // this.audio.preload = 'preload'
       this.audio.src = url
       AUDIO_CACHE.set(url, this.audio)
     }
@@ -61,12 +60,18 @@ export default class AudioPlayer {
     return this.audio.play()
   }
 
+  restart() {
+    this.audio.pause()
+    this.audio.currentTime = 0
+    return this.audio.play()
+  }
+
   pause() {
     return this.audio.pause()
   }
 
   seek(seconds: number) {
-    this.audio.currentTime += seconds
+    return this.audio.currentTime += seconds
   }
 }
 

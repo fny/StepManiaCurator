@@ -1,6 +1,7 @@
 source 'https://rubygems.org'
 
 gem 'sinatra'
+gem 'sinatra-logger'
 gem 'slim'
 gem 'memoist'
 gem 'puma'

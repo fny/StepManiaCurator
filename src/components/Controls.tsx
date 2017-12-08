@@ -14,16 +14,29 @@ interface ControlsProps {
 
 interface ControlsState {
   isPlaying: boolean
+  audioReadyState: number
 }
 
 class Controls extends React.Component<ControlsProps, ControlsState> {
   audioPlayer: AudioPlayer
+  audioCheck: any
   constructor(props: ControlsProps) {
     super(props)
     this.state = {
       isPlaying: false,
+      audioReadyState: 0
     }
     this.audioPlayer = new AudioPlayer(helpers.audioURL(this.props.song))
+  }
+
+  componentDidMount() {
+    this.audioCheck = setInterval(() => {
+      this.setState({audioReadyState: this.audioPlayer.audio.readyState})
+    }, 500)
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.audioCheck)
   }
 
   componentWillUpdate(nextProps: ControlsProps, nextState: ControlsState) {
@@ -49,10 +62,10 @@ class Controls extends React.Component<ControlsProps, ControlsState> {
   render() {
     let playButton =
       this.audioPlayer.isPlaying() ?
-        <button className="Controls-button" onClick={this.songToggle}>PAUSE</button> :
-        <button className="Controls-button" onClick={this.songToggle}>PLAY</button>
+        <button className="Controls-button" onClick={this.songToggle}>{`PAUSE ${this.state.audioReadyState}`}</button> :
+        <button className="Controls-button" onClick={this.songToggle}>{`PLAY ${this.state.audioReadyState}`}</button>
 
-    if (helpers.hasNoSupportedAudio(this.props.song)) {
+    if (helpers.isVideo(this.props.song)) {
       playButton = <button className="Controls-button">ERR</button>
     }
 
@@ -60,6 +73,7 @@ class Controls extends React.Component<ControlsProps, ControlsState> {
       <div className="Controls">
         {playButton}
         <button className="Controls-button" onClick={() => this.songSeek(15)}>+15</button>
+        <button className="Controls-button" onClick={() => this.audioPlayer.restart()}>RW</button>
         <button className="Controls-button" onClick={this.props.prevSong}>PREV</button>
         <button className="Controls-button" onClick={this.props.nextSong}>NEXT</button>
       </div>

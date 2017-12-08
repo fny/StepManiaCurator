@@ -6,6 +6,8 @@ import Cover from './components/Cover'
 import Tagging from './components/Tagging'
 import Controls from './components/Controls'
 import Rating from './components/Rating'
+import Flash from './components/Flash'
+
 
 import { Offline } from 'react-detect-offline'
 
@@ -21,8 +23,10 @@ interface SongViewProps {
 }
 
 const SongView = ({ song, visible, nextSong, prevSong }: SongViewProps) => {
+  const classNames = ['Song']
+  if (!visible) { classNames.push('hidden') }
   return (
-    <div className="Song" style={!visible ? {display: 'none'} : {}}>
+    <div className={classNames.join(' ')}>
       <Cover song={song} />
       <Rating song={song} />
       <Tagging tags={settings.tags} song={song} />
@@ -31,7 +35,7 @@ const SongView = ({ song, visible, nextSong, prevSong }: SongViewProps) => {
   )
 }
 
-interface AppProps { }
+interface AppProps {}
 interface AppState {
   currentSong?: Song
   songs: Song[]
@@ -56,32 +60,21 @@ class App extends React.Component<AppProps, AppState> {
     let response
     try {
       response = await helpers.http.get(`${settings.host}/songs_tagless/${amount}`)
-      console.log(response)
-    } catch (err) {
-      console.log(err)
-      this.setState({ apiError: err.message, })
+    }
+    catch (err) {
+      console.error(err)
+      this.setState({ apiError: `${err.message} ${helpers.randomStr()}`, })
       return
     }
-    this.appendSongs(response.data as Song[])
-  }
-
-  @bind
-  appendSongs(newSongs: Song[]) {
-
+    const newSongs = response.data as Song[]
     const currentSongIds = new Set(this.state.songs.map(s => s.id))
     const songs: Song[] = this.state.songs.concat(newSongs.filter(newSong => {
       return !currentSongIds.has(newSong.id)
     }))
 
-    if (songs.length > settings.maxSongCount) {
-      this.setState({
-        songs: songs.slice(settings.songDropCount),
-        cursor: this.state.cursor + settings.songDropCount
-      })
-    } else {
-      this.setState({ songs })
-    }
+    this.setState({ songs })
   }
+
 
   @bind
   prevSong() {
@@ -91,12 +84,33 @@ class App extends React.Component<AppProps, AppState> {
 
   @bind
   nextSong() {
+    // We can't go past the total number of songs
     if (this.state.cursor === this.state.songs.length - 1) { return }
-    this.setState({ cursor: this.state.cursor + 1 })
 
-    const withinThreshold = ((this.state.songs.length - this.state.cursor) <= settings.songPreloadThreshold)
-    if (withinThreshold) {
-      this.loadUntaggedSongs()
+    const newCursor = this.state.cursor + 1 
+
+    const prevSongCount = newCursor - 1
+
+    // Within amount to keeps
+    if (prevSongCount <= settings.numPrevSongsToKeep) {
+      const stateA = { cursor: newCursor }
+      this.setState(stateA, () => {
+        if (this.state.songs.length <= settings.songPreloadThreshold) {
+          this.loadUntaggedSongs()
+        }       
+      })
+    }
+    // Drop the extra songs
+    else {
+      const stateB = {
+        cursor: settings.numPrevSongsToKeep,
+        songs: this.state.songs.slice(newCursor - settings.numPrevSongsToKeep)
+      }
+      this.setState(stateB, () => {
+        if (this.state.songs.length <= settings.songPreloadThreshold) {
+          this.loadUntaggedSongs()
+        }       
+      })
     }
   }
 
@@ -105,18 +119,21 @@ class App extends React.Component<AppProps, AppState> {
   }
 
   render() {  
-    if (this.state.apiError) {
-      return <div className="App-error">{this.state.apiError}</div>
-      }
     if (this.state.songs.length === 0) {
-      return <div className="App-loading">Loading...</div>
+      if (this.state.apiError) {
+        return <Flash>{this.state.apiError}</Flash>
+      } else {
+        return <Flash>Loading...</Flash>
+      }
     }
+
     const songs = this.state.songs
     
     return (
       <div>
+        {this.state.apiError ? <Flash disappear={true}>{this.state.apiError}</Flash> : ''}
         <Offline>
-          <div className="App-offline">You're currently offline! Noting will be saved.</div>
+          <Flash>Currently offline! Nothing will be saved.</Flash>
         </Offline>
         <div className="wrapper">
           {

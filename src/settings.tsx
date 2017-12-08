@@ -1,14 +1,11 @@
-const utilTags = 'DEL|ERR|POOR|MISC'.split('|')
-const genreTags = 'TECHNO|HIPHOP|ROCK|LATIN|OLDIES|ROCK|FOB|LOL'.split('|')
+const utilTags = 'NUTS|LOWQ|MISC|DEL'.split('|')
+const genreTags = 'TECHNO|HIPHOP|POP|LATIN|ROCK|OLDIES|FOB|LOL'.split('|')
 
 export const tags = utilTags.concat(genreTags)
 
 export const host = `//${new URL(window.location.href).searchParams.get('host')}`
 
-export const maxSongCount = 50
-
-export const songPreloadCount = 15
-
-export const songPreloadThreshold = 3
-
-export const songDropCount = 20
+export const songPreloadCount = 10
+export const numPrevSongsToKeep = 3
+export const songPreloadThreshold = numPrevSongsToKeep + 5
+export const requestTimeoutSeconds = 10

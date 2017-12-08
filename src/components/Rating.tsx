@@ -72,11 +72,11 @@ export default class Rating extends React.Component<RatingProps, RatingState> {
         <RatingButton key={i} currentRating={this.state.rating} value={i} clickHandler={this.onRatingClick} />
       )
     }
-    
+    // return <audio src={helpers.audioURL(this.props.song)} controls={true} />
     return (
-      <div className={classNames.join(' ')}>
-        {buttons}
-      </div>
+     <div className={classNames.join(' ')}>
+       {buttons}
+     </div>
     )
   }
 }

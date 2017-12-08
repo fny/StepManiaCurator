@@ -182,6 +182,11 @@ class Song
     !(sm_path || ssc_path).nil?
   end
 
+
+  def is_video
+    audio_ext == '.avi'
+  end
+
   def has_audio
     !audio_path.nil?
   end
@@ -195,6 +200,6 @@ class Song
   end
 
   def valid?
-    has_audio && has_steps && has_enough_levels
+    has_audio && has_steps && has_enough_levels && !is_video
   end
 end

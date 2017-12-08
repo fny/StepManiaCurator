@@ -1,0 +1,9 @@
+.Flash-message {
+  color: white;
+  background: #444;
+  line-height: 2rem;
+  text-align: center;
+  position: fixed;
+  width: 100%;
+  z-index: 100;
+}
